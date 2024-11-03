@@ -7,6 +7,7 @@ setup(
     version="0.1.0",           # Version of your package # Your email
     long_description=README,  # Read the content of README.md
     long_description_content_type='text/markdown',
+
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
