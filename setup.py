@@ -2,16 +2,10 @@ from setuptools import setup,find_packages
 
 setup(
     name="offlix",  # Replace with your package name
-    version="0.1.0",           # Version of your package
-    author="Suman Manna",        # Your name
-    author_email="youremail@example.com",  # Your email
-    description="A brief description of your package",
+    version="0.1.0",           # Version of your package # Your email
     long_description=open('README.md').read(),  # Read the content of README.md
     long_description_content_type='text/markdown',
     packages=find_packages(),
-    install_requires=[
-        # any dependencies you need
-    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

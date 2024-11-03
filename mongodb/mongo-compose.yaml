@@ -21,4 +21,4 @@ services:
     depends_on:
       - mongo
     ports:
-      - '8888:8081'
+      - '8889:8081'

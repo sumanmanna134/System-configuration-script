@@ -19,7 +19,24 @@ def display_ascii_banner():
     """
     print(banner)
 
-def start_service(service_name, yaml_file, docker_compose_command, action):
+
+def prompt_user_to_stop_streaming(stop_event):
+    """Prompt the user to stop streaming logs every 5 seconds."""
+    while not stop_event.is_set(): 
+        if stop_event.is_set():
+            break # Loop until stop_event is set
+        time.sleep(5)  # Wait for 5 seconds
+        response = input("Do you want to stop streaming? (ctrl^c/no): ").strip().lower()
+        if response == "yes":
+            stop_event.set()
+            print("Stopping log streaming...") 
+            return
+        elif response == "no":
+            continue
+        else:
+            print("Invalid input. Please enter 'yes' or 'no'.")
+
+def start_service(service_name, yaml_file, docker_compose_command, action, show_logs=False):
     """
     Start or stop a specified service using docker-compose based on the action.
     
@@ -57,12 +74,32 @@ def start_service(service_name, yaml_file, docker_compose_command, action):
         result = subprocess.run(command, check=True, capture_output=True, text=True, cwd=os.path.dirname(yaml_file_path))
         if action == 'install':
             print(f"{service_name} is up and running! 🎉")
+            if show_logs:
+                print("Streaming logs for the service: 📡")
+                log_command = docker_compose_command.split() + ["-f", yaml_file_path, "logs", "-f"]
+                log_process = subprocess.Popen(log_command, cwd=os.path.dirname(yaml_file_path), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+                try:
+                    while True:
+                        # Check if there's output to read
+                        output = log_process.stdout.readline()
+                        if output:
+                            print(output.decode().strip())
+                except KeyboardInterrupt:
+                    print("\nKeyboard interrupt detected. Stopping log streaming...")
+                finally:
+                    # Clean up after stopping log streaming
+                    log_process.terminate()  # Terminate the log process
+                    log_process.wait()  # Wait for the process to exit
+                    print("Log streaming has been stopped. 🛑")
+                    
+                
         elif action == 'uninstall':
             print(f"{service_name} has been stopped successfully! ✅")
-        print(result.stdout)
     except subprocess.CalledProcessError as e:
         print(f"Failed to {action} {service_name}. Please check {yaml_file_path} and try again. ❗")
         print("Error:", e.stderr)
+
 
 def get_service_env(service_name):
     """
@@ -155,6 +192,12 @@ def main():
         help="Optional: Path to a custom Docker Compose YAML file to use instead of predefined ones."
     )
 
+    parser.add_argument(
+        "--logs", 
+        action="store_true", 
+        help="If set, stream docker-compose logs during installation."
+    )
+
     args = parser.parse_args()
 
     display_ascii_banner()
@@ -173,7 +216,7 @@ def main():
 
     # Iterate over each service and prompt the user
     if yaml_file:
-        start_service(service_name.capitalize(), yaml_file, args.docker_compose_command, args.command)
+        start_service(service_name.capitalize(), yaml_file, args.docker_compose_command, args.command, show_logs=args.logs)
         
         if args.command == "install":
             time.sleep(5)  # Wait a moment to ensure the service is up
@@ -187,4 +230,4 @@ def main():
         print(f"Service '{service_name}' is not recognized. Available services: {', '.join(services.keys())}")
 
     print("All selected services have been processed.")
-    print(f"To stop any running services manually, use: ${args.docker_compose_command} down")
+    # print(f"To stop any running services manually, use: ${args.docker_compose_command} down")
