@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: offlix
+Version: 0.1
+Summary: A tool to install and start Docker services using Docker Compose.
+Home-page: https://your-repo-url.com
+Author: Suman Manna
+Author-email: manna.suman134@gmail.com
