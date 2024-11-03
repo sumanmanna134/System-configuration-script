@@ -1,11 +1,14 @@
 from setuptools import setup,find_packages
-from pathlib import Path
+from os import path
 
-README = (Path(__file__).parent / "README.md").read_text()
+working_directory = path.abspath(path.dirname(__file__))
+
+with open(path.join(working_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 setup(
     name="offlix",  # Replace with your package name
     version="0.1.0",           # Version of your package # Your email
-    long_description=README,  # Read the content of README.md
+    long_description=long_description,  # Read the content of README.md
     long_description_content_type='text/markdown',
 
     packages=find_packages(),
