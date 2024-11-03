@@ -8,3 +8,5 @@ offlix.egg-info/requires.txt
 offlix.egg-info/top_level.txt
 offlix_installer/__init__.py
 offlix_installer/installer.py
+test/__init__.py
+test/test_main.py
