@@ -4,20 +4,30 @@ import json
 import argparse
 import time
 import docker
+import sys
+from dotenv import load_dotenv
+import pkg_resources
 
+load_dotenv()
+VERSION = os.getenv("VERSION", "0.1.0") 
+
+# def display_ascii_banner():
+#     banner_path = os.path.join(os.path.dirname(__file__), "banner.txt")
+#     try:
+#         with open(banner_path, "r") as banner_file:
+#             banner = banner_file.read()
+#             # Replace {VERSION} placeholder with actual version
+#             print(banner.replace("{VERSION}", VERSION))
+#     except FileNotFoundError:
+#         print("Banner file not found. Proceeding without banner.\n")
 
 def display_ascii_banner():
-    banner = """
-     ______    _______   _______  ___        __     ___  ___  
-   /    " \  /"     "| /"     "||"  |      |" \   |"  \/"  | 
-  // ____  \(: ______)(: ______)||  |      ||  |   \   \  /  
- /  /    ) :)\/    |   \/    |  |:  |      |:  |    \\  \/   
-(: (____/ // // ___)   // ___)   \  |___   |.  |    /\.  \   
- \        / (:  (     (:  (     ( \_|:  \  /\  |\  /  \   \  
-  \_____/   \__/      \__/      \_______)(__\_|_)|___/\___|
-                                                              
-    """
-    print(banner)
+    """Prints the banner text from banner.txt with the version."""
+    try:
+        banner = pkg_resources.resource_string(__name__, "banner.txt").decode("utf-8")
+        print(banner.replace("{VERSION}", VERSION))
+    except Exception as e:
+        print(f"Error reading banner file: {e}")
 
 
 def prompt_user_to_stop_streaming(stop_event):
@@ -60,6 +70,9 @@ def start_service(service_name, yaml_file, docker_compose_command, action, show_
         if response == "yes":
             print(f"Starting {service_name}... 🚀")
             command = docker_compose_command.split() + ["-f", yaml_file_path, "up", "-d"]
+        else:
+            print(f"{service_name} will not be installed 🛑.")
+            exit(0)
     elif action == 'uninstall':
         response = input(f"Do you want to stop/uninstall {service_name}? (yes/no): ").strip().lower()
         if response == "yes":
@@ -171,7 +184,7 @@ def save_env_to_file(service_name, env_vars):
 def main():
     parser = argparse.ArgumentParser(
         description="Start or stop Docker services using docker-compose.",
-        epilog="Example usage: python script.py install mysql --compose-file path/to/custom-compose.yaml"
+        epilog="Example usage: offlix install mysql --compose-file path/to/custom-compose.yaml"
     )
     parser.add_argument(
         "command", 
@@ -197,6 +210,11 @@ def main():
         action="store_true", 
         help="If set, stream docker-compose logs during installation."
     )
+
+    if len(sys.argv) == 1:
+        display_ascii_banner()
+        parser.print_help()
+        sys.exit(1)
 
     args = parser.parse_args()
 

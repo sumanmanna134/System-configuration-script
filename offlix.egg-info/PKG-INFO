@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: offlix
-Version: 0.1.0
-Summary: A tool to install and start Docker services using Docker Compose.
-Home-page: https://your-repo-url.com
+Version: 0.1.5.1
+Summary: Offlix is a command-line tool designed to simplify the deployment and management of common services using Docker Compose. With Offlix, you can easily install, uninstall, and retrieve environment variables for services like MySQL, MongoDB, Kafka, Maildev, and PostgreSQL, etc
+Home-page: https://github.com/sumanmanna134/offlix-cli
 Author: Suman Manna
 Author-email: manna.suman134@gmail.com
 Classifier: Programming Language :: Python :: 3
@@ -12,6 +12,7 @@ Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: docker
+Requires-Dist: python-dotenv
 
 <!-- # Installation Script for Development Tools
 
